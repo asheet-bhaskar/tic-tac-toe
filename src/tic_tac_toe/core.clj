@@ -7,9 +7,11 @@
 (defn mark [board cell turn]
     (assoc board turn (conj (turn board) cell)))
 
-(defn draw? [board]
+(defn check_for_draw? [board]
   (= (+ (count (:x board)) (count (:o board))) 9))
 
+(def win-sets [#{1 2 3} #{4 5 6} #{7 8 9} #{1 4 7} #{2 5 8} #{3 6 9} #{1 5 9} #{3 5 7}])
+   
 
 (defn symbol_at?
   [board cell]
@@ -41,14 +43,14 @@
   [board]
   (let [play1 (player_move1 board)]
     (cond
-      (draw? play1) (println "Draw")
+      (some #(every? (:x play1) %) win-sets) (println "Player 1 won")
+      (check_for_draw? play1) (println "Draw")
       :else (let [play2 (player_move2 play1)]
               (cond
-                (draw? play2) (println "Draw")
+                (some #(every? (:o play2) %) win-sets) (println "Player 2 won")
+                (check_for_draw? play2) (println "Draw")
                 :else (play play2))))))
 
 (defn -main []
   (let [initial_board {:x (set ()) :o (set ()) }]
-  (play initial_board)))
-
-
+   (play initial_board)))
