@@ -74,4 +74,4 @@
 
 (defn -main []
   (let [initial_board {:x (set ()) :o (set ()) }]
-   (play initial_board)))
+    (play initial_board)))
