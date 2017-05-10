@@ -1,4 +1,5 @@
-(ns tic-tac-toe.core)
+(ns tic-tac-toe.core
+(:require [clojure.set :as set]))
 
 (defn initial_board
   [x_cells o_cells]
@@ -12,6 +13,26 @@
 
 (def win-sets [#{1 2 3} #{4 5 6} #{7 8 9} #{1 4 7} #{2 5 8} #{3 6 9} #{1 5 9} #{3 5 7}])
    
+(defn empty_cells [board]
+  (set/difference (apply sorted-set (range 1 10)) (:x board) (:o board)))
+
+(defn next_level_board [board sym]
+  (map #(mark board % sym) (empty_cells board)))
+
+
+(defn opponent [sym]
+    (cond
+      (= sym :x) :o
+      (= sym :o) :x ))
+
+(defn game_tree [board sym]
+  {:root board :children (map #(game_tree % (opponent sym)) (next_level_board board sym))})
+
+(defn evaluate [board]
+  (cond
+    (some #(every? (:x board) %) win-sets) 10
+    (some #(every? (:o board) %) win-sets) -10
+    :else 0))
 
 (defn symbol_at?
   [board cell]
